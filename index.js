@@ -36,5 +36,5 @@ client.on('interactionCreate', async (interaction) => {
     }
 });
 
-// Login to Discord with your client's token
+// Login to Discord with client's token
 client.login(token);
