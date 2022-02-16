@@ -1,3 +1,4 @@
 {
-    "token": "your-token-goes-here"
+    "token": "your-token-goes-here",
+    "mapquestKey": "your-key-goes-here"
 }
