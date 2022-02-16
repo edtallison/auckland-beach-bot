@@ -7,7 +7,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('tide')
         .setDescription('Gets tide info using NIWA api')
-        .addStringOption((option) => option.setName('beach-name').setDescription('Beach name').setRequired(true)),
+        .addStringOption((option) => option.setName('beach-name').setDescription('Enter the beach name').setRequired(true)),
     async execute(interaction) {
         const option = interaction.options.getString('beach-name', true);
 
@@ -27,16 +27,19 @@ module.exports = {
 
         const tideData = await axios.get('https://api.niwa.co.nz/tides/data', {
             params: {
-                lat: lat,
-                long: long,
+                lat,
+                long,
             },
             headers: {
                 'x-apikey': niwaKey,
             },
         });
 
-        let lastTideTime = new Date(tideData.data.values.pop().time).toTimeString();
-        console.log(lastTideTime);
-        await interaction.reply(`${input}\nLattitidue: ${lat}, Longitdue: ${long}\n${lastTideTime}`);
+        let lastTideTime = new Date(tideData.data.values.pop().time); // hh:mm:ss format, 24 hour time
+
+        formattedTime = lastTideTime.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+
+        console.log(formattedTime);
+        await interaction.reply(`${input}\nLattitidue: ${lat}, Longitdue: ${long}\n${formattedTime}`);
     },
 };
