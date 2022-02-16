@@ -8,6 +8,7 @@ module.exports = {
         .setName('tide')
         .setDescription('Gets tide info using NIWA api')
         .addStringOption((option) => option.setName('beach-name').setDescription('Enter the beach name').setRequired(true)),
+
     async execute(interaction) {
         const option = interaction.options.getString('beach-name', true);
 
@@ -25,21 +26,82 @@ module.exports = {
         console.log(lat);
         console.log(long);
 
-        const tideData = await axios.get('https://api.niwa.co.nz/tides/data', {
-            params: {
-                lat,
-                long,
-            },
-            headers: {
-                'x-apikey': niwaKey,
-            },
+        // Get tide data from Tide API using coordinates from dictionary
+        const tideData = (
+            await axios.get('https://api.niwa.co.nz/tides/data', {
+                params: {
+                    lat,
+                    long,
+                },
+                headers: {
+                    'x-apikey': niwaKey,
+                },
+            })
+        ).data.values;
+
+        /*
+        [
+            {
+                "time": "ISO string",
+                "value": number
+            }
+        ] 
+
+        becomes
+
+        {
+            "time": <DATEOBJECT>,
+            "value": number,
+        }
+        */
+
+        const formattedData = tideData.map(({ time, value }, i) => {
+            let tideType;
+            if (i == 0) {
+                if (value < tideData[1].value) {
+                    tideType = 'low';
+                } else {
+                    tideType = 'high';
+                }
+            } else {
+                if (value < tideData[i - 1].value) {
+                    tideType = 'low';
+                } else {
+                    tideType = 'high';
+                }
+            }
+            console.log(value, tideType);
+            return { time: new Date(new Date(time).getTime() + 1000 * 60 * 30), value, tideType };
         });
 
-        let lastTideTime = new Date(tideData.data.values.pop().time); // hh:mm:ss format, 24 hour time
+        //formattedTime = lastTideTime.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
 
-        formattedTime = lastTideTime.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+        const currentDate = new Date(); // in UTC, not local time
+        console.log(currentDate);
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+        const today = currentDate.getDate();
 
-        console.log(formattedTime);
-        await interaction.reply(`${input}\nLattitidue: ${lat}, Longitdue: ${long}\n${formattedTime}`);
+        const tomorrow = new Date(year, month, today + 1);
+        console.log(tomorrow.toString()); // toString method converts it to local time
+
+        const tomorrowsFirstTide = formattedData.find(({ time }) => time.getTime() >= tomorrow.getTime());
+        console.log(
+            `Tomorrows first tide (${tomorrowsFirstTide.time.toDateString()}) is at ${tomorrowsFirstTide.time.toTimeString()} (${
+                tomorrowsFirstTide.tideType
+            } tide)`
+        );
+
+        // console.log(formattedData);
+        await interaction.reply(`${input}\nLattitidue: ${lat}, Longitdue: ${long}`);
     },
 };
+
+// const currentDate = new Date(); // in UTC, not local time
+// console.log(currentDate.toString()); // toString method converts it to local time
+// const year = currentDate.getFullYear();
+// const month = currentDate.getMonth();
+// const today = currentDate.getDate();
+
+// const tomorrow = new Date(year, month, today + 1);
+// console.log(tomorrow.toString());
