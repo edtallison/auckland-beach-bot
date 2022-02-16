@@ -11,13 +11,16 @@ module.exports = {
     async execute(interaction) {
         const option = interaction.options.getString('beach-name', true);
 
-        if (!beaches[option]) {
+        const inputFilter = new RegExp(/[^a-zA-Z0-9]/g);
+        const input = option.replaceAll(inputFilter, '');
+
+        if (!beaches[input]) {
             await interaction.reply(`Invalid beach name`);
             return;
         }
 
-        const lat = beaches[option][0];
-        const long = beaches[option][1];
+        const lat = beaches[input][0];
+        const long = beaches[input][1];
 
         console.log(lat);
         console.log(long);
@@ -31,9 +34,9 @@ module.exports = {
                 'x-apikey': niwaKey,
             },
         });
-        let lastTideTime = new Date(tideData.data.values.pop().time);
-        lastTideTime = lastTideTime.toTimeString();
+
+        let lastTideTime = new Date(tideData.data.values.pop().time).toTimeString();
         console.log(lastTideTime);
-        await interaction.reply(`${option}\nLattitidue: ${lat}, Longitdue: ${long}\n${lastTideTime}`);
+        await interaction.reply(`${input}\nLattitidue: ${lat}, Longitdue: ${long}\n${lastTideTime}`);
     },
 };
