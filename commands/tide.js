@@ -39,22 +39,6 @@ module.exports = {
             })
         ).data.values;
 
-        /*
-        [
-            {
-                "time": "ISO string",
-                "value": number
-            }
-        ] 
-
-        becomes
-
-        {
-            "time": <DATEOBJECT>,
-            "value": number,
-        }
-        */
-
         const formattedData = tideData.map(({ time, value }, i) => {
             let tideType;
             if (i == 0) {
@@ -71,10 +55,8 @@ module.exports = {
                 }
             }
             console.log(value, tideType);
-            return { time: new Date(new Date(time).getTime() + 1000 * 60 * 30), value, tideType };
+            return { time: new Date(new Date(time).getTime() + 1000 * 60 * 30), value, tideType }; // Add 30 minute offset
         });
-
-        //formattedTime = lastTideTime.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
 
         const currentDate = new Date(); // in UTC, not local time
         console.log(currentDate);
@@ -82,21 +64,39 @@ module.exports = {
         const month = currentDate.getMonth();
         const today = currentDate.getDate();
 
-        const tomorrow = new Date(year, month, today + 1);
-        console.log(tomorrow.toString()); // toString method converts it to local time
+        const tomorrow = new Date(year, month, today + 1).getTime();
+        const dayAfterTomorrow = tomorrow + 1000 * 60 ** 2 * 24;
 
-        const tomorrowsFirstTide = formattedData.find(({ time }) => time.getTime() >= tomorrow.getTime());
+        const tomorrowsTides = formattedData.filter(
+            ({ time }) => time.getTime() >= tomorrow && time.getTime() < dayAfterTomorrow
+        );
         console.log(
-            `Tomorrows first tide (${tomorrowsFirstTide.time.toDateString()}) is at ${tomorrowsFirstTide.time.toTimeString()} (${
-                tomorrowsFirstTide.tideType
+            `Tomorrows first tide (${tomorrowsTides[0].time.toDateString()}) is at ${tomorrowsTides[0].time.toTimeString()} (${
+                tomorrowsTides[0].tideType
             } tide)`
         );
 
-        // console.log(formattedData);
-        await interaction.reply(
-            `**${input}**\nShowing info for tomorrow (${tomorrowsFirstTide.time.toDateString()})\n* ${
-                tomorrowsFirstTide.tideType
-            } tide: ${tomorrowsFirstTide.time.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}`
-        );
+        let reply = [
+            `**${input}**`,
+            `Showing info for tomorrow (${tomorrowsTides[0].time.toDateString()})`,
+
+            // `* ${tomorrowsTides[0].tideType} tide: ${tomorrowsFirstTide.time.toLocaleTimeString('en-US', {
+            //     hour: 'numeric',
+            //     minute: 'numeric',
+            //     hour12: true,
+            // })}`,
+        ];
+
+        for (const tide of tomorrowsTides) {
+            reply.push(
+                `* ${tide.tideType} tide: ${tide.time.toLocaleTimeString('en-US', {
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    hour12: true,
+                })}`
+            );
+        }
+
+        await interaction.reply(reply.join('\n'));
     },
 };
