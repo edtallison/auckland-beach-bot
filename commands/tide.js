@@ -65,9 +65,9 @@ module.exports = {
                 }
             } else {
                 if (value < tideData[i - 1].value) {
-                    tideType = 'low';
+                    tideType = 'Low';
                 } else {
-                    tideType = 'high';
+                    tideType = 'High';
                 }
             }
             console.log(value, tideType);
@@ -93,6 +93,10 @@ module.exports = {
         );
 
         // console.log(formattedData);
-        await interaction.reply(`${input}\nLattitidue: ${lat}, Longitdue: ${long}`);
+        await interaction.reply(
+            `${input}\nLattitidue: ${lat}, Longitdue: ${long}\nShowing info for tomorrow (${tomorrowsFirstTide.time.toDateString()})\n* ${
+                tomorrowsFirstTide.tideType
+            } tide: ${tomorrowsFirstTide.time.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}`
+        );
     },
 };
