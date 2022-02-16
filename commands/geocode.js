@@ -1,6 +1,6 @@
 const axios = require('axios');
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { mapquestKey } = require('../config.json');
+const { mapquestKey, niwaKey } = require('../config.json');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -13,16 +13,12 @@ module.exports = {
             option += ' beach';
         }
 
-        const locationData = await axios.get(
-            'http://open.mapquestapi.com/geocoding/v1/address',
-            // 'http://open.mapquestapi.com/geocoding/v1/address?key=nHcBFhTvHtORVbVMH1dBs8apRK5G8xJM&location=titirangi%20beach'
-            {
-                params: {
-                    key: mapquestKey,
-                    location: option,
-                },
-            }
-        );
+        const locationData = await axios.get('http://open.mapquestapi.com/geocoding/v1/address', {
+            params: {
+                key: mapquestKey,
+                location: option,
+            },
+        });
 
         console.log(option);
 
@@ -33,10 +29,20 @@ module.exports = {
             return;
         }
 
-        //console.log(locationData.data.results[0]?.locations.shift().latLng);
+        const { lat, lng } = locationResult.locations.shift().displayLatLng;
 
-        const { lat, lng } = locationResult.locations.shift().latLng;
-
+        const tideData = await axios.get('https://api.niwa.co.nz/tides/data', {
+            params: {
+                lat: lat,
+                long: lng,
+            },
+            headers: {
+                'x-apikey': niwaKey,
+            },
+        });
+        let lastTideTime = new Date(tideData.data.values.pop().time);
+        lastTideTime = lastTideTime.toTimeString();
+        console.log(lastTideTime);
         await interaction.reply(`${option}\nLattitidue: ${lat}, Longitdue: ${lng}`);
     },
 };

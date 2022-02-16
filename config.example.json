@@ -1,4 +1,5 @@
 {
     "token": "your-token-goes-here",
-    "mapquestKey": "your-key-goes-here"
+    "mapquestKey": "your-key-goes-here",
+    "niwaKey": "your-key-goes-here"
 }
