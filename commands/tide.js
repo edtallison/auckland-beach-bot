@@ -94,7 +94,7 @@ module.exports = {
 
         // console.log(formattedData);
         await interaction.reply(
-            `${input}\nLattitidue: ${lat}, Longitdue: ${long}\nShowing info for tomorrow (${tomorrowsFirstTide.time.toDateString()})\n* ${
+            `**${input}**\nShowing info for tomorrow (${tomorrowsFirstTide.time.toDateString()})\n* ${
                 tomorrowsFirstTide.tideType
             } tide: ${tomorrowsFirstTide.time.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}`
         );
