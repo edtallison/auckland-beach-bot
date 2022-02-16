@@ -96,12 +96,3 @@ module.exports = {
         await interaction.reply(`${input}\nLattitidue: ${lat}, Longitdue: ${long}`);
     },
 };
-
-// const currentDate = new Date(); // in UTC, not local time
-// console.log(currentDate.toString()); // toString method converts it to local time
-// const year = currentDate.getFullYear();
-// const month = currentDate.getMonth();
-// const today = currentDate.getDate();
-
-// const tomorrow = new Date(year, month, today + 1);
-// console.log(tomorrow.toString());
