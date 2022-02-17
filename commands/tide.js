@@ -76,16 +76,7 @@ module.exports = {
             } tide)`
         );
 
-        let reply = [
-            `**${input}**`,
-            `Showing info for tomorrow (${tomorrowsTides[0].time.toDateString()})`,
-
-            // `* ${tomorrowsTides[0].tideType} tide: ${tomorrowsFirstTide.time.toLocaleTimeString('en-US', {
-            //     hour: 'numeric',
-            //     minute: 'numeric',
-            //     hour12: true,
-            // })}`,
-        ];
+        let reply = [`**${input}**`, `Showing info for tomorrow (${tomorrowsTides[0].time.toDateString()})`];
 
         for (const tide of tomorrowsTides) {
             reply.push(
