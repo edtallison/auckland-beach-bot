@@ -3,8 +3,6 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { niwaKey } = require('../config.json');
 const beaches = require('../beaches.js');
 
-// test
-
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('tide')
@@ -25,9 +23,6 @@ module.exports = {
         const lat = beaches[input][0];
         const long = beaches[input][1];
 
-        console.log(lat);
-        console.log(long);
-
         // Get tide data from Tide API using coordinates from dictionary
         const tideData = (
             await axios.get('https://api.niwa.co.nz/tides/data', {
@@ -45,9 +40,9 @@ module.exports = {
             let tideType;
             if (i == 0) {
                 if (value < tideData[1].value) {
-                    tideType = 'low';
+                    tideType = 'Low';
                 } else {
-                    tideType = 'high';
+                    tideType = 'High';
                 }
             } else {
                 if (value < tideData[i - 1].value) {
@@ -56,7 +51,6 @@ module.exports = {
                     tideType = 'High';
                 }
             }
-            console.log(value, tideType);
             return { time: new Date(new Date(time).getTime() + 1000 * 60 * 30), value, tideType }; // Add 30 minute offset
         });
 
@@ -69,16 +63,27 @@ module.exports = {
         const tomorrow = new Date(year, month, today + 1).getTime();
         const dayAfterTomorrow = tomorrow + 1000 * 60 ** 2 * 24;
 
+        let reply = [`Showing info for **${input}**`];
+
+        const todaysTides = formattedData.filter(({ time }) => time.getTime() >= today && time.getTime() < tomorrow);
+
+        reply.push([`\nTide times for today (${todaysTides[0].time.toDateString()})`]);
+
+        for (const tide of todaysTides) {
+            reply.push(
+                `* ${tide.tideType} tide: ${tide.time.toLocaleTimeString('en-US', {
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    hour12: true,
+                })}`
+            );
+        }
+
         const tomorrowsTides = formattedData.filter(
             ({ time }) => time.getTime() >= tomorrow && time.getTime() < dayAfterTomorrow
         );
-        console.log(
-            `Tomorrows first tide (${tomorrowsTides[0].time.toDateString()}) is at ${tomorrowsTides[0].time.toTimeString()} (${
-                tomorrowsTides[0].tideType
-            } tide)`
-        );
 
-        let reply = [`**${input}**`, `Showing info for tomorrow (${tomorrowsTides[0].time.toDateString()})`];
+        reply.push([`\nTide times for tomorrow (${tomorrowsTides[0].time.toDateString()})`]);
 
         for (const tide of tomorrowsTides) {
             reply.push(
