@@ -3,6 +3,8 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { niwaKey } = require('../config.json');
 const beaches = require('../beaches.js');
 
+// test
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('tide')
