@@ -55,7 +55,6 @@ module.exports = {
         });
 
         const currentDate = new Date(); // in UTC, not local time
-        console.log(currentDate);
         const year = currentDate.getFullYear();
         const month = currentDate.getMonth();
         const today = currentDate.getDate();
