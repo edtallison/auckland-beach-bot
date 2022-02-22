@@ -1,4 +1,6 @@
 {
+    "guildId": "your-guild-(server)-id-goes-here",
+    "clientId": "your-client-id-goes-here",
     "token": "your-token-goes-here",
     "niwaKey": "your-key-goes-here"
 }
