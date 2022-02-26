@@ -1,15 +1,28 @@
 const axios = require('axios');
-const { SlashCommandBuilder } = require('@discordjs/builders');
+import { SlashCommandBuilder } from '@discordjs/builders';
 const { niwaKey } = require('../../config.json');
 import { beaches } from '../beaches.js';
 import { Command } from '../types/Command';
 
-export const command: Command = {
-    data: new SlashCommandBuilder()
-        .setName('tide')
-        .setDescription('Gets tide info using NIWA api')
-        .addStringOption((option) => option.setName('beach-name').setDescription('Enter the beach name').setRequired(true)),
+interface TideData {
+    time: Date;
+    value: number;
+}
 
+const a = new SlashCommandBuilder()
+    .setName('tide')
+    .setDescription('Gets tide info using NIWA api')
+    .addStringOption((option) => option.setName('beach-name').setDescription('Enter the beach name').setRequired(true));
+
+const command: Command = {
+    data() {
+        const builder = new SlashCommandBuilder().setName('tide').setDescription('Gets tide info using NIWA api');
+        builder.addStringOption((option) =>
+            option.setName('beach-name').setDescription('Enter the beach name').setRequired(true)
+        );
+
+        return builder;
+    },
     async execute(interaction) {
         const option = interaction.options.getString('beach-name', true);
 
@@ -25,7 +38,8 @@ export const command: Command = {
         const long = beaches[input][1];
 
         // Get tide data from Tide API using coordinates from dictionary
-        const tideData = (
+
+        const tideData: TideData[] = (
             await axios.get('https://api.niwa.co.nz/tides/data', {
                 params: {
                     lat,
@@ -37,7 +51,7 @@ export const command: Command = {
             })
         ).data.values;
 
-        const formattedData = tideData.map(({ time, value }, i) => {
+        const formattedData = tideData.map(({ time, value }, i: number) => {
             let tideType;
             if (i == 0) {
                 if (value < tideData[1].value) {
@@ -63,11 +77,11 @@ export const command: Command = {
         const tomorrow = new Date(year, month, today + 1).getTime();
         const dayAfterTomorrow = tomorrow + 1000 * 60 ** 2 * 24;
 
-        let reply = [`Showing info for **${input}**`];
+        let reply: string[] = [`Showing info for **${input}**`];
 
         const todaysTides = formattedData.filter(({ time }) => time.getTime() >= today && time.getTime() < tomorrow);
 
-        reply.push([`\nTide times for today (${todaysTides[0].time.toDateString()})`]);
+        reply.push(`\nTide times for today (${todaysTides[0].time.toDateString()})`);
 
         for (const tide of todaysTides) {
             reply.push(
@@ -83,7 +97,7 @@ export const command: Command = {
             ({ time }) => time.getTime() >= tomorrow && time.getTime() < dayAfterTomorrow
         );
 
-        reply.push([`\nTide times for tomorrow (${tomorrowsTides[0].time.toDateString()})`]);
+        reply.push(`\nTide times for tomorrow (${tomorrowsTides[0].time.toDateString()})`);
 
         for (const tide of tomorrowsTides) {
             reply.push(
@@ -98,3 +112,5 @@ export const command: Command = {
         await interaction.reply(reply.join('\n'));
     },
 };
+
+export default command;

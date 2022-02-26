@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 import { Command } from '../types/Command';
 
-export const command: Command = {
+const command: Command = {
     data: new SlashCommandBuilder().setName('fishing').setDescription('Check if today is an ideal fishing day'),
     async execute(interaction) {
         const ideal = 1 + Math.floor(Math.random() * 100); // 1 to 100 (inclusive)
@@ -13,3 +13,5 @@ export const command: Command = {
         }
     },
 };
+
+export default command;
