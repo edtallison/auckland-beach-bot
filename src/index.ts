@@ -1,17 +1,21 @@
 // Require the necessary discord.js classes etc
-const fs = require('fs');
-const { Client, Collection, Intents } = require('discord.js');
-const { token } = require('./config.json');
+import fs from 'fs';
+import { Client, Collection, Intents } from 'discord.js';
+const { token } = require('../config.json');
 
 // Create a new client instance
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const client = new Client({ intents: [Intents.FLAGS.GUILDS] }) as BeachBot;
 
-// When the client is ready, run this code
 client.once('ready', () => {
     console.log('Ready!');
 });
 
+interface BeachBot extends Client {
+    commands: Collection<string, unknown>;
+}
+
 client.commands = new Collection();
+
 const commandFiles = fs.readdirSync('./commands').filter((file) => file.endsWith('.js'));
 
 for (const file of commandFiles) {

@@ -1,6 +1,6 @@
 const axios = require('axios');
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { niwaKey } = require('../config.json');
+const { niwaKey } = require('../../config.json');
 const beaches = require('../beaches.js');
 
 module.exports = {
