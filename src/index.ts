@@ -1,6 +1,7 @@
 // Require the necessary discord.js classes etc
 import fs from 'fs';
 import { Client, Collection, Intents } from 'discord.js';
+import { Command } from './types/Command';
 const { token } = require('../config.json');
 
 // Create a new client instance
@@ -11,7 +12,7 @@ client.once('ready', () => {
 });
 
 interface BeachBot extends Client {
-    commands: Collection<string, unknown>;
+    commands: Collection<string, Command>;
 }
 
 client.commands = new Collection();
