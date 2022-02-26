@@ -1,18 +1,14 @@
-const axios = require('axios');
+import axios from 'axios';
 import { SlashCommandBuilder } from '@discordjs/builders';
-const { niwaKey } = require('../../config.json');
-import { beaches } from '../beaches.js';
+import { beaches } from '../beaches';
 import { Command } from '../types/Command';
+
+const { niwaKey } = require('../../config.json');
 
 interface TideData {
     time: Date;
     value: number;
 }
-
-const a = new SlashCommandBuilder()
-    .setName('tide')
-    .setDescription('Gets tide info using NIWA api')
-    .addStringOption((option) => option.setName('beach-name').setDescription('Enter the beach name').setRequired(true));
 
 const command: Command = {
     data() {

@@ -2,6 +2,10 @@
 import fs from 'fs';
 import { Client, Collection, Intents } from 'discord.js';
 import { Command } from './types/Command';
+import { join } from 'path';
+import { deployCommandsLocally } from './deployCommands';
+import commands from './commands';
+
 const { token } = require('../config.json');
 
 // Create a new client instance
@@ -9,6 +13,13 @@ const client = new Client({ intents: [Intents.FLAGS.GUILDS] }) as BeachBot;
 
 client.once('ready', () => {
     console.log('Ready!');
+
+    // if '--deploy' is detected in the CLI
+    if (process.argv.slice(2).includes('--deploy')) {
+        console.log('Deploying commands (local)...');
+        // run command deploying script
+        deployCommandsLocally();
+    }
 });
 
 interface BeachBot extends Client {
@@ -17,18 +28,11 @@ interface BeachBot extends Client {
 
 client.commands = new Collection();
 
-const commandFiles = fs.readdirSync('./commands').filter((file) => file.endsWith('.js'));
-
-for (const file of commandFiles) {
-    const command = require(`./commands/${file}`);
-    // Set a new item in the Collection
-    // With the key as the command name and the value as the exported module
-    client.commands.set(command.data.name, command);
-}
+// add each command (identified by name) to the collection
+commands.forEach((command) => client.commands.set(command.data().name, command));
 
 client.on('interactionCreate', async (interaction) => {
     if (!interaction.isCommand()) return;
-
     const command = client.commands.get(interaction.commandName);
 
     if (!command) return;
