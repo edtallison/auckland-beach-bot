@@ -3,6 +3,7 @@ const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const { clientId, token } = require('../config.json');
 
+// based javascript
 const commands = fs
     .readdirSync('./commands')
     .filter((file) => file.endsWith('.js'))

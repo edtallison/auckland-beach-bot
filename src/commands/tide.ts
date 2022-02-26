@@ -1,9 +1,10 @@
 const axios = require('axios');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { niwaKey } = require('../../config.json');
-const beaches = require('../beaches.js');
+import { beaches } from '../beaches.js';
+import { Command } from '../types/Command';
 
-module.exports = {
+export const command: Command = {
     data: new SlashCommandBuilder()
         .setName('tide')
         .setDescription('Gets tide info using NIWA api')
